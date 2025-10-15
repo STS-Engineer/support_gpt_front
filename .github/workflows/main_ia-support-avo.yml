@@ -20,27 +20,17 @@ jobs:
           node-version: '22.x'
           cache: 'npm'
 
-      # If you use a lockfile (package-lock.json), prefer npm ci for reproducible builds
-      - name: npm install
-        run: |
-          npm install
-      - name:  build
-        run: | 
-          CI=false 
-          npm run build --if-present
+      - name: Install dependencies (temporary)
+        run: npm install --legacy-peer-deps
 
-      # Upload only what you actually need to deploy (adjust path for your app)
-      - name: Upload artifact for deployment
+      - name: Build
+        run: npm run build --if-present
+
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: node-app
-          path: |
-            .
-            !**/.git/**
-            !**/.github/**
-            !**/node_modules/**
-            !**/tests/**
-            !**/*.md
+          path: .
 
   deploy:
     runs-on: ubuntu-latest
@@ -68,4 +58,3 @@ jobs:
           app-name: IA-support-avo
           slot-name: Production
           package: .
-
